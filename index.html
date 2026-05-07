@@ -222,12 +222,12 @@
     <div class="brand">שטיין יפים שיפוצים</div>
   </div>
   <div class="topbar-actions">
-    <input type="file" id="file-upload" style="display:none" accept=".json" onchange="loadProject(event)">
+    <input type="file" id="file-upload" style="display:none" accept=".json" onchange="window.loadProject(event)">
     
-    <button type="button" class="btn btn-outline" onclick="resetForm()">הצעה חדשה</button>
+    <button type="button" class="btn btn-outline" onclick="window.resetForm()">הצעה חדשה</button>
     <button type="button" class="btn btn-outline" onclick="document.getElementById('file-upload').click()">📂 טען קובץ</button>
-    <button type="button" class="btn btn-outline" onclick="saveProject()">💾 שמור טיוטה</button>
-    <button type="button" class="btn btn-gold" onclick="printQuote()">🖨 הדפס / שמור כ-PDF</button>
+    <button type="button" class="btn btn-outline" onclick="window.saveProject()">💾 שמור טיוטה</button>
+    <button type="button" class="btn btn-gold" onclick="window.printQuote()">🖨 הדפס / שמור כ-PDF</button>
   </div>
 </div>
 
@@ -251,12 +251,12 @@
       </div>
       <div class="panel-body" style="padding: 15px; background: #f8fafc;">
         
-        <button class="template-btn" onclick="addTemplate('bathroom')">
+        <button type="button" class="template-btn" onclick="window.addTemplate('bathroom')">
           <span class="t-title">+ שיפוץ אמבטיה</span>
           <span class="t-desc">כולל פירוק, צנרת מים וביוב, כלים סניטריים וקרמיקה.</span>
         </button>
 
-        </div>
+      </div>
     </div>
   </aside>
 
@@ -277,7 +277,7 @@
           <tbody id="items-body"></tbody>
         </table>
         <div style="padding: 20px;">
-          <button type="button" class="btn btn-outline" style="width:100%; border-style: dashed; padding: 14px;" onclick="addRow()">+ הוסף סעיף עבודה חדש (ריק)</button>
+          <button type="button" class="btn btn-outline" style="width:100%; border-style: dashed; padding: 14px;" onclick="window.addRow()">+ הוסף סעיף עבודה חדש (ריק)</button>
         </div>
       </div>
     </div>
@@ -297,7 +297,7 @@
         </div>
         <div style="padding: 15px 0;">
           <label style="display:flex; align-items:center; gap:8px; font-size: 15px; cursor:pointer; font-weight: 600;">
-            <input type="checkbox" id="vat-check" checked onchange="calcTotals()" style="width:18px; height:18px; cursor:pointer;">
+            <input type="checkbox" id="vat-check" checked onchange="window.calcTotals()" style="width:18px; height:18px; cursor:pointer;">
             כולל מע"מ (18%)
           </label>
         </div>
@@ -316,82 +316,79 @@
 </div>
 
 <script>
-let items = [];
+// חסינות מקסימלית: כל המשתנים והפונקציות מחוברים ישירות ל-window
+window.appItems = [];
 
-// ----------------------------------------
 // הגדרת התבניות
-// ----------------------------------------
-const templates = {
+window.appTemplates = {
   bathroom: {
     desc: "שיפוץ אמבטיה",
     subs: [
       "פרוק קרמיקה ישנה",
       "פרוק כלים סאניטרים ישנים",
-      "החלפת צנרת מיים חמים וקרים בתוך האמבטיה",
+      "החלפת צנרת מים חמים וקרים בתוך האמבטיה",
       "החלפת צנרת ביוב בתוך אמבטיה",
       "הרכבת כלים סאניטריים חדשים, כולל הרכבת שירותים תלויים עם ניאגרה סמויה",
       "הרכבת קרמיקה חדשה"
     ]
   }
-  // תוכל להוסיף כאן עוד תבניות בעתיד
 };
 
-function addTemplate(key) {
-  const tmpl = templates[key];
+window.addTemplate = function(key) {
+  const tmpl = window.appTemplates[key];
   if (!tmpl) return;
   
-  const newSubs = tmpl.subs.map(subText => {
+  const newSubs = tmpl.subs.map(function(subText) {
     return { desc: subText, price: 0 };
   });
 
-  items.push({ 
+  window.appItems.push({ 
     desc: tmpl.desc, 
     price: 0, 
     subs: newSubs, 
     isUnified: false 
   });
   
-  renderItems();
-}
-// ----------------------------------------
+  window.renderItems();
+};
 
-function escapeHtml(str) {
+window.escapeHtml = function(str) {
   if (!str) return '';
-  return str.replace(/&/g, '&amp;')
+  return String(str).replace(/&/g, '&amp;')
             .replace(/</g, '&lt;')
             .replace(/>/g, '&gt;')
             .replace(/"/g, '&quot;')
             .replace(/'/g, '&#039;');
-}
+};
 
-function addRow() {
-  items.push({ desc: '', price: 0, subs: [], isUnified: false });
-  renderItems();
-}
+window.addRow = function() {
+  window.appItems.push({ desc: '', price: 0, subs: [], isUnified: false });
+  window.renderItems();
+};
 
-function addSubRow(i) {
-  items[i].subs.push({ desc: '', price: 0 });
-  renderItems();
-}
+window.addSubRow = function(i) {
+  window.appItems[i].subs.push({ desc: '', price: 0 });
+  window.renderItems();
+};
 
-function toggleUnified(i) {
-  items[i].isUnified = !items[i].isUnified;
-  if (items[i].isUnified) {
-    const currentSubSum = items[i].subs.reduce((a, b) => a + b.price, 0);
-    if (currentSubSum > 0) items[i].price = currentSubSum;
-    items[i].subs.forEach(s => s.price = 0);
+window.toggleUnified = function(i) {
+  window.appItems[i].isUnified = !window.appItems[i].isUnified;
+  if (window.appItems[i].isUnified) {
+    const currentSubSum = window.appItems[i].subs.reduce(function(a, b) { return a + b.price; }, 0);
+    if (currentSubSum > 0) window.appItems[i].price = currentSubSum;
+    window.appItems[i].subs.forEach(function(s) { s.price = 0; });
   }
-  renderItems();
-}
+  window.renderItems();
+};
 
-function renderItems() {
+window.renderItems = function() {
   const tbody = document.getElementById('items-body');
   if (!tbody) return;
   tbody.innerHTML = '';
   
-  items.forEach((item, i) => {
+  window.appItems.forEach(function(item, i) {
     const hasSubs = item.subs.length > 0;
-    const rowTotal = item.isUnified ? item.price : (hasSubs ? item.subs.reduce((a,b)=>a+b.price, 0) : item.price);
+    const rowTotal = item.isUnified ? item.price : (hasSubs ? item.subs.reduce(function(a,b){return a+b.price;}, 0) : item.price);
     
     const tr = document.createElement('tr');
     tr.className = 'parent-row';
@@ -400,26 +397,26 @@ function renderItems() {
       <td>
         <textarea 
           onblur="if(!this.value.trim()) this.style.borderColor='var(--red)';" 
-          oninput="items[${i}].desc=this.value; this.style.borderColor='var(--line)';" 
-          placeholder="">${escapeHtml(item.desc)}</textarea>
+          oninput="window.appItems[${i}].desc=this.value; this.style.borderColor='var(--line)';" 
+          placeholder="">${window.escapeHtml(item.desc)}</textarea>
         <div style="margin: 8px 0 12px 0;">
-          <button type="button" class="action-link" onclick="addSubRow(${i})">+ הוסף שורה</button>
-          ${hasSubs ? `<button type="button" class="action-link ${item.isUnified ? 'red' : ''}" onclick="toggleUnified(${i})">
+          <button type="button" class="action-link" onclick="window.addSubRow(${i})">+ הוסף שורה</button>
+          ${hasSubs ? `<button type="button" class="action-link ${item.isUnified ? 'red' : ''}" onclick="window.toggleUnified(${i})">
             ${item.isUnified ? '✕ בטל מחיר אחיד' : '⚙ מחיר אחיד'}
           </button>` : ''}
         </div>
       </td>
       <td style="text-align:center;">
         ${(!hasSubs || item.isUnified) ? 
-          `<input type="number" style="width:110px; text-align:left;" value="${item.price}" oninput="items[${i}].price=parseFloat(this.value)||0; calcTotals(); updateRowDisplay(${i})">` : 
+          `<input type="number" style="width:110px; text-align:left;" value="${item.price}" oninput="window.appItems[${i}].price=parseFloat(this.value)||0; window.calcTotals(); window.updateRowDisplay(${i});">` : 
           `<span style="font-size:13px; color:var(--muted); font-style:italic; font-weight:600;">מחושב לפי הפירוט</span>`}
       </td>
       <td style="font-weight:800; padding-top:18px; font-size:18px; color:var(--text);" id="total-row-${i}">₪${rowTotal.toLocaleString()}</td>
-      <td style="text-align:center; padding-top:16px;"><button type="button" class="delete-btn" onclick="items.splice(${i},1); renderItems();">✕</button></td>
+      <td style="text-align:center; padding-top:16px;"><button type="button" class="delete-btn" onclick="window.appItems.splice(${i},1); window.renderItems();">✕</button></td>
     `;
     tbody.appendChild(tr);
 
-    item.subs.forEach((sub, j) => {
+    item.subs.forEach(function(sub, j) {
       const subTr = document.createElement('tr');
       subTr.className = 'sub-row';
       subTr.innerHTML = `
@@ -429,13 +426,223 @@ function renderItems() {
             <span style="font-size:13px; font-weight:700; color:var(--muted); flex-shrink: 0;">${i+1}.${j+1}</span>
             <input type="text" 
               onblur="if(!this.value.trim()) this.style.borderColor='var(--red)';" 
-              oninput="items[${i}].subs[${j}].desc=this.value; this.style.borderColor='var(--line)';" 
-              value="${escapeHtml(sub.desc)}" 
+              oninput="window.appItems[${i}].subs[${j}].desc=this.value; this.style.borderColor='var(--line)';" 
+              value="${window.escapeHtml(sub.desc)}" 
               placeholder="">
           </div>
         </td>
         <td style="text-align:center;">
-          ${!item.isUnified ? `<input type="number" style="width:90px; text-align:left;" value="${sub.price}" oninput="items[${i}].subs[${j}].price=parseFloat(this.value)||0; calcTotals(); updateRowDisplay(${i})">` : ''}
+          ${!item.isUnified ? `<input type="number" style="width:90px; text-align:left;" value="${sub.price}" oninput="window.appItems[${i}].subs[${j}].price=parseFloat(this.value)||0; window.calcTotals(); window.updateRowDisplay(${i});">` : ''}
         </td>
         <td style="font-size:15px; font-weight:600; color:var(--muted); padding-top:16px;">₪${sub.price.toLocaleString()}</td>
-        <td style="text-align:center; padding-top:12px;"><button type="button" class="delete-btn" style="font-size:16px;" onclick="items[${i}].subs.splice(${j
+        <td style="text-align:center; padding-top:12px;"><button type="button" class="delete-btn" style="font-size:16px;" onclick="window.appItems[${i}].subs.splice(${j},1); window.renderItems();">✕</button></td>
+      `;
+      tbody.appendChild(subTr);
+    });
+  });
+  window.calcTotals();
+};
+
+window.updateRowDisplay = function(i) {
+  const item = window.appItems[i];
+  const rowTotal = item.isUnified ? item.price : (item.subs.length > 0 ? item.subs.reduce(function(a,b){return a+b.price;}, 0) : item.price);
+  document.getElementById(`total-row-${i}`).textContent = '₪' + rowTotal.toLocaleString();
+};
+
+window.calcTotals = function() {
+  const subtotal = window.appItems.reduce(function(acc, it) {
+    return acc + (it.isUnified ? it.price : (it.subs.length > 0 ? it.subs.reduce(function(a,b){return a+b.price;}, 0) : it.price));
+  }, 0);
+  
+  const vatCheck = document.getElementById('vat-check');
+  const vatRate = vatCheck && vatCheck.checked ? 0.18 : 0;
+  const vat = subtotal * vatRate;
+  
+  document.getElementById('sum-before').textContent = '₪' + subtotal.toLocaleString();
+  document.getElementById('sum-vat').textContent = '₪' + vat.toLocaleString();
+  document.getElementById('sum-total').textContent = '₪' + (subtotal + vat).toLocaleString();
+  
+  const vatRow = document.getElementById('vat-row');
+  if(vatRow) vatRow.style.display = vatRate > 0 ? 'flex' : 'none';
+};
+
+window.saveProject = function() {
+  const data = {
+    title: document.getElementById('quote-title').value,
+    client: document.getElementById('client-name').value,
+    notes: document.getElementById('notes').value,
+    vat: document.getElementById('vat-check').checked,
+    items: window.appItems
+  };
+  
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data));
+  const downloadAnchorNode = document.createElement('a');
+  downloadAnchorNode.setAttribute("href", dataStr);
+  
+  const fileName = (data.client ? "טיוטה_" + data.client.replace(/\s+/g, '_') : "טיוטת_הצעה") + ".json";
+  downloadAnchorNode.setAttribute("download", fileName);
+  document.body.appendChild(downloadAnchorNode);
+  downloadAnchorNode.click();
+  downloadAnchorNode.remove();
+};
+
+window.loadProject = function(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = JSON.parse(e.target.result);
+      document.getElementById('quote-title').value = data.title || '';
+      document.getElementById('client-name').value = data.client || '';
+      document.getElementById('notes').value = data.notes || '';
+      const vatCheck = document.getElementById('vat-check');
+      if (vatCheck) vatCheck.checked = data.vat !== false;
+      
+      window.appItems = data.items || [];
+      window.renderItems();
+    } catch (err) {
+      alert("שגיאה בטעינת הקובץ. ודא שזהו קובץ JSON תקין שנוצר על ידי המערכת.");
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+};
+
+window.printQuote = function() {
+  if (window.appItems.length === 0) {
+    alert("לא ניתן להדפיס הצעה ריקה. הוסף לפחות סעיף עבודה אחד.");
+    return;
+  }
+
+  let isMissingDescriptions = false;
+  window.appItems.forEach(function(item) {
+    if (!item.desc.trim()) isMissingDescriptions = true;
+    item.subs.forEach(function(sub) {
+      if (!sub.desc.trim()) isMissingDescriptions = true;
+    });
+  });
+
+  if (isMissingDescriptions) {
+    alert("חובה למלא את כל תיאורי העבודה (ראשיים ותתי-סעיפים) לפני ההדפסה. אנא בדוק שורות שסומנו באדום.");
+    window.renderItems(); 
+    return;
+  }
+
+  const bizName = "שטיין יפים שיפוצים";
+  const client = document.getElementById('client-name').value || "לקוח";
+  const title = document.getElementById('quote-title').value || "הצעת מחיר";
+  const notes = document.getElementById('notes').value;
+  const isVat = document.getElementById('vat-check').checked;
+  const dateStr = new Date().toLocaleDateString('he-IL');
+  
+  const subtotal = window.appItems.reduce(function(acc, it) { 
+    return acc + (it.isUnified ? it.price : (it.subs.length > 0 ? it.subs.reduce(function(a,b){return a+b.price;}, 0) : it.price));
+  }, 0);
+  const vat = isVat ? subtotal * 0.18 : 0;
+  const total = subtotal + vat;
+
+  let tableRows = '';
+  window.appItems.forEach(function(it, i) {
+    const numSubs = it.subs.length;
+    const itTotal = it.isUnified ? it.price : (numSubs > 0 ? it.subs.reduce(function(a,b){return a+b.price;}, 0) : it.price);
+    const safeDesc = window.escapeHtml(it.desc).replace(/\n/g, '<br>');
+    
+    const rowspanIndexAttr = numSubs > 0 ? ` rowspan="${numSubs + 1}"` : '';
+    const rowspanPriceAttr = (numSubs > 0 && it.isUnified) ? ` rowspan="${numSubs + 1}"` : '';
+    
+    tableRows += `
+      <tr class="main-row">
+        <td class="center"${rowspanIndexAttr} style="${numSubs > 0 ? 'vertical-align: middle;' : ''}">${i+1}</td>
+        <td class="desc-cell"><strong>${safeDesc}</strong></td>
+        <td class="price-cell"${rowspanPriceAttr} style="${(numSubs > 0 && it.isUnified) ? 'vertical-align: middle;' : ''}">₪${itTotal.toLocaleString()}</td>
+      </tr>
+    `;
+    
+    if(numSubs > 0) {
+      it.subs.forEach(function(s, j) {
+        tableRows += `
+          <tr class="sub-row-print">
+            <td class="desc-cell"><span class="sub-num">${i+1}.${j+1}</span> ${window.escapeHtml(s.desc)}</td>
+            ${it.isUnified ? '' : `<td class="price-cell">₪${s.price.toLocaleString()}</td>`}
+          </tr>
+        `;
+      });
+    }
+  });
+
+  const printHtml = `
+    <!DOCTYPE html>
+    <html lang="he" dir="rtl">
+    <head>
+      <meta charset="UTF-8">
+      <title>${window.escapeHtml(title)} - ${window.escapeHtml(client)}</title>
+      <style>
+        body { font-family: Arial, Helvetica, sans-serif; color: #000000; margin: 0; padding: 40px; font-size: 16px; line-height: 1.6; }
+        .header { display: flex; justify-content: space-between; border-bottom: 3px solid #000000; padding-bottom: 15px; margin-bottom: 35px; }
+        .header h1 { margin: 0; font-size: 32px; color: #000000; letter-spacing: -0.5px; }
+        .header h2 { margin: 0; font-size: 22px; margin-bottom: 5px; color: #000000; }
+        .header p { margin: 0; color: #333333; font-size: 15px; font-weight: bold; }
+        .client-box { background-color: #f5f5f5; padding: 20px; border: 1px solid #999999; margin-bottom: 35px; border-radius: 6px; font-size: 18px; color: #000000; }
+        
+        table { width: 100%; border-collapse: collapse; margin-bottom: 40px; }
+        th, td { border: 1px solid #666666; padding: 12px 15px; text-align: right; }
+        th { background-color: #eeeeee; font-weight: bold; font-size: 16px; color: #000000; }
+        .center { text-align: center; }
+        .price-cell { font-weight: bold; width: 160px; font-size: 16px; }
+        .desc-cell { font-size: 16px; color: #000000; }
+        
+        .main-row td { padding-top: 20px; padding-bottom: 20px; font-size: 18px; color: #000000; }
+        .sub-row-print td { color: #333333; padding-top: 8px; padding-bottom: 8px; border-top: none; }
+        .sub-num { color: #666666; font-size: 14px; font-weight: bold; margin-left: 8px; }
+        
+        .totals-container { width: 350px; float: left; border: 1px solid #999999; padding: 20px; background: #f5f5f5; border-radius: 6px; }
+        .totals-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 16px; font-weight: bold; color: #333333; }
+        .grand-total { font-size: 24px; font-weight: 800; border-top: 3px solid #000000; margin-top: 15px; padding-top: 15px; color: #000000; }
+        
+        .clear { clear: both; }
+        .notes-box { margin-top: 50px; padding: 20px; border-right: 5px solid #000000; background: #f5f5f5; border-radius: 4px; }
+        .notes-box pre { font-family: Arial, Helvetica, sans-serif; white-space: pre-wrap; margin: 0; margin-top: 10px; font-size: 16px; line-height: 1.6; color: #000000; }
+        
+        .disclaimer { margin-top: 40px; padding-top: 15px; border-top: 1px solid #999999; font-size: 14px; color: #333333; font-weight: bold; }
+        
+        @media print {
+          body { padding: 0; }
+          .totals-container { break-inside: avoid; }
+          * { -webkit-print-color-adjust: exact !important; color-adjust: exact !important; print-color-adjust: exact !important; }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="header">
+        <div>
+          <h1>${bizName}</h1>
+        </div>
+        <div>
+          <h2>${window.escapeHtml(title)}</h2>
+          <p>תאריך: ${dateStr}</p>
+        </div>
+      </div>
+      
+      <div class="client-box">
+        <strong>לכבוד:</strong> ${window.escapeHtml(client)}
+      </div>
+      
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 60px;" class="center">#</th>
+            <th>תיאור העבודה</th>
+            <th class="price-cell">סה"כ</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${tableRows}
+        </tbody>
+      </table>
+      
+      <div class="totals-container">
+        <div class="totals-row">
+          <span>סה"כ לפני מע"מ:</span>
+          <span>₪${subtotal.toLocaleString
