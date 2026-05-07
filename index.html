@@ -223,9 +223,9 @@
     <input type="file" id="file-upload" style="display:none" accept=".json">
     
     <button type="button" class="btn btn-outline" id="btn-new">הצעה חדשה</button>
-    <button type="button" class="btn btn-outline" id="btn-upload-trigger">📂 טען קובץ</button>
-    <button type="button" class="btn btn-outline" id="btn-save">💾 שמור טיוטה</button>
-    <button type="button" class="btn btn-gold" id="btn-print">🖨 הדפס / שמור כ-PDF</button>
+    <button type="button" class="btn btn-outline" id="btn-upload-trigger">📂 טען הצעה</button>
+    <button type="button" class="btn btn-outline" id="btn-save">💾 שמור הצעה</button>
+    <button type="button" class="btn btn-gold" id="btn-print">🖨 הדפס</button>
   </div>
 </div>
 
@@ -286,15 +286,15 @@
             <tr>
               <th style="width:50px; text-align:center;">#</th>
               <th style="min-width: 300px;">תיאור עבודה</th>
-              <th style="width:140px; text-align:center;">מחיר יחידה</th>
-              <th style="width:140px; text-align:left;">סה"כ (₪)</th>
+              <th style="width:140px; text-align:center;">מחיר</th>
+              <th style="width:140px; text-align:left;">סה"כ מחיר ללא מע"מ (₪)</th>
               <th style="width:60px;"></th>
             </tr>
           </thead>
           <tbody id="items-body"></tbody>
         </table>
         <div style="padding: 20px;">
-          <button type="button" class="btn btn-outline" id="btn-add-row" style="width:100%; border-style: dashed; padding: 14px;">+ הוסף סעיף עבודה חדש (ריק)</button>
+          <button type="button" class="btn btn-outline" id="btn-add-row" style="width:100%; border-style: dashed; padding: 14px;">+ הוסף שורת עבודה </button>
         </div>
       </div>
     </div>
@@ -394,7 +394,7 @@ function renderItems() {
       <td>
         <textarea class="desc-input" data-i="${i}" placeholder="">${escapeHtml(item.desc)}</textarea>
         <div style="margin: 8px 0 12px 0;">
-          <button type="button" class="action-link add-sub-btn" data-i="${i}">+ הוסף שורה</button>
+          <button type="button" class="action-link add-sub-btn" data-i="${i}">+ הוסף תת שורה</button>
           ${hasSubs ? `<button type="button" class="action-link toggle-unified-btn ${item.isUnified ? 'red' : ''}" data-i="${i}">
             ${item.isUnified ? '✕ בטל מחיר אחיד' : '⚙ מחיר אחיד'}
           </button>` : ''}
@@ -493,6 +493,7 @@ function loadProject(event) {
       
       appItems = data.items || [];
       renderItems();
+      calcTotals(); // מוודא שהסיכומים מתעדכנים בטעינה
     } catch (err) {
       alert("שגיאה בטעינת הקובץ. ודא שזהו קובץ JSON תקין שנוצר על ידי המערכת.");
     }
@@ -507,7 +508,7 @@ function resetForm() {
     document.getElementById('client-name').value = '';
     document.getElementById('quote-title').value = '';
     document.getElementById('notes').value = '';
-    addRow();
+    renderItems(); // מנקה את הטבלה לחלוטין ללא יצירת שורה ריקה
   }
 }
 
@@ -573,10 +574,6 @@ function printQuote() {
     }
   });
 
-  /* * העיצוב להדפסה הותאם: 
-   * 1. @page { margin: 0; } מסיר את הקישורים, השעות וכותרות הדפדפן.
-   * 2. .header הפך ל-flex שמסדר את שם העסק מימין, והכותרת במרכז.
-   */
   const printHtml = `
     <!DOCTYPE html>
     <html lang="he" dir="rtl">
@@ -586,19 +583,18 @@ function printQuote() {
       <style>
         @page {
           size: A4;
-          margin: 0mm; /* מעלים את הקישורים ותאריכי ההדפסה של הדפדפן */
+          margin: 0mm; 
         }
         body { 
           font-family: Arial, Helvetica, sans-serif; 
           color: #000000; 
           margin: 0; 
-          padding: 20mm 20mm; /* מרווח פנימי במקום המרווח של הדפדפן */
+          padding: 20mm 20mm; 
           font-size: 15px; 
           line-height: 1.4; 
           box-sizing: border-box;
         }
 
-        /* כותרת הדפסה משודרגת */
         .header { 
           display: flex; 
           align-items: center; 
@@ -828,8 +824,7 @@ function initApp() {
   tbody.addEventListener('input', handleTableInput);
   tbody.addEventListener('focusout', handleTableFocusOut);
 
-  // מפעיל שורה אחת ריקה בהתחלה
-  addRow();
+  // המערכת נטענת עכשיו ריקה לחלוטין - ללא קריאה ל-addRow()!
 }
 
 // הרצת האתחול
