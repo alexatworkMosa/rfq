@@ -157,6 +157,7 @@
     font-family: inherit;
     display: flex;
     align-items: center;
+    gap: 8px; /* הוספת מרווח קטן בין האייקון לטקסט */
   }
   .template-btn:hover {
     border-color: var(--blue);
@@ -223,9 +224,9 @@
     <input type="file" id="file-upload" style="display:none" accept=".json">
     
     <button type="button" class="btn btn-outline" id="btn-new">הצעה חדשה</button>
-    <button type="button" class="btn btn-outline" id="btn-upload-trigger">📂 טען קובץ</button>
-    <button type="button" class="btn btn-outline" id="btn-save">💾 שמור טיוטה</button>
-    <button type="button" class="btn btn-gold" id="btn-print">🖨 הדפס / שמור כ-PDF</button>
+    <button type="button" class="btn btn-outline" id="btn-upload-trigger">📂 טען הצעה</button>
+    <button type="button" class="btn btn-outline" id="btn-save">💾 שמור הצעה </button>
+    <button type="button" class="btn btn-gold" id="btn-print">🖨 הדפס </button>
   </div>
 </div>
 
@@ -250,27 +251,27 @@
       <div class="panel-body" style="padding: 15px; background: #f8fafc;">
         
         <button type="button" class="template-btn tmpl-btn" data-tmpl="bathroom">
-          <span class="t-title">+ שיפוץ אמבטיה</span>
+          <span class="t-title">🛁 שיפוץ אמבטיה</span>
         </button>
 
         <button type="button" class="template-btn tmpl-btn" data-tmpl="electricity">
-          <span class="t-title">+ עבודות חשמל</span>
+          <span class="t-title">💡 עבודות חשמל</span>
         </button>
 
         <button type="button" class="template-btn tmpl-btn" data-tmpl="ceramics">
-          <span class="t-title">+ הדבקת קרמיקה</span>
+          <span class="t-title">🧱 הדבקת קרמיקה</span>
         </button>
 
         <button type="button" class="template-btn tmpl-btn" data-tmpl="plumbing">
-          <span class="t-title">+ עבודות אינסטלציה</span>
+          <span class="t-title">🔧 עבודות אינסטלציה</span>
         </button>
 
         <button type="button" class="template-btn tmpl-btn" data-tmpl="painting">
-          <span class="t-title">+ צביעת דירה</span>
+          <span class="t-title">🖌️ צביעת דירה</span>
         </button>
 
         <button type="button" class="template-btn tmpl-btn" data-tmpl="waste">
-          <span class="t-title">+ פינוי פסולת בניה</span>
+          <span class="t-title">🚜 פינוי פסולת בניה</span>
         </button>
 
       </div>
@@ -347,7 +348,7 @@ const appTemplates = {
       "הרכבת קרמיקה חדשה"
     ]
   },
-  electricity: { desc: "עבודות חשמל: הכוללים תאורה, מפסקים ושקעים חדשים", subs: [] },
+  electricity: { desc: " ( עבודות חשמל לפי יחידה ( תאורה, מפסקים , שקעים ", subs: [] },
   ceramics: { desc: "הדבקת קרמיקה", subs: [] },
   plumbing: { desc: "עבודות אינסטלציה", subs: [] },
   painting: { desc: "צביעת דירה", subs: [] },
@@ -394,7 +395,7 @@ function renderItems() {
       <td>
         <textarea class="desc-input" data-i="${i}" placeholder="">${escapeHtml(item.desc)}</textarea>
         <div style="margin: 8px 0 12px 0;">
-          <button type="button" class="action-link add-sub-btn" data-i="${i}">+ הוסף שורה</button>
+          <button type="button" class="action-link add-sub-btn" data-i="${i}">+ הוסף תת שורה</button>
           ${hasSubs ? `<button type="button" class="action-link toggle-unified-btn ${item.isUnified ? 'red' : ''}" data-i="${i}">
             ${item.isUnified ? '✕ בטל מחיר אחיד' : '⚙ מחיר אחיד'}
           </button>` : ''}
