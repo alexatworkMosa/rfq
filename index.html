@@ -210,8 +210,16 @@
         </thead>
         <tbody id="items-body"></tbody>
       </table>
-      <div style="padding: 20px;">
-        <button type="button" class="btn btn-outline" style="width:100%; border-style: dashed; padding: 14px;" onclick="addRow()">+ הוסף סעיף עבודה חדש</button>
+      <div style="padding: 20px; display: flex; gap: 15px;">
+        <button type="button" class="btn btn-outline" style="flex: 1; border-style: dashed; padding: 14px;" onclick="addRow()">+ הוסף סעיף עבודה חדש</button>
+        
+        <div style="flex: 1; position: relative;">
+          <select id="template-select" style="width: 100%; height: 100%; border: 1px dashed var(--blue); color: var(--blue); background: var(--blue-lt); padding: 0 20px; border-radius: 6px; font-size: 16px; font-weight: 600; cursor: pointer; outline: none; appearance: none;" onchange="if(this.value) { addTemplate(this.value); this.value=''; }">
+            <option value="" disabled selected>+ הוסף מתבנית נפוצה...</option>
+            <option value="bathroom">שיפוץ אמבטיה קומפלט</option>
+            </select>
+          <div style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); pointer-events: none; color: var(--blue); font-size: 12px;">▼</div>
+        </div>
       </div>
     </div>
   </div>
@@ -250,7 +258,44 @@
 <script>
 let items = [];
 
-// פונקציית עזר להגנה על תווים כדי למנוע שבירה של ה-HTML
+// ----------------------------------------
+// כאן מוגדרות התבניות למילוי מהיר!
+// תוכל להוסיף עוד בלוקים כאלו בקלות בעתיד.
+// ----------------------------------------
+const templates = {
+  bathroom: {
+    desc: "שיפוץ אמבטיה",
+    subs: [
+      "פרוק קרמיקה ישנה",
+      "פרוק כלים סאניטרים ישנים",
+      "החלפת צנרת מיים חמים וקרים בתוך האמבטיה",
+      "החלפת צנרת ביוב בתוך אמבטיה",
+      "הרכבת כלים סאניטריים חדשים, כולל הרכבת שירותים תלויים עם ניאגרה סמויה",
+      "הרכבת קרמיקה חדשה"
+    ]
+  }
+};
+
+function addTemplate(key) {
+  const tmpl = templates[key];
+  if (!tmpl) return;
+  
+  // הופכים כל שורה מהתבנית לאובייקט מתאים
+  const newSubs = tmpl.subs.map(subText => {
+    return { desc: subText, price: 0 };
+  });
+
+  items.push({ 
+    desc: tmpl.desc, 
+    price: 0, 
+    subs: newSubs, 
+    isUnified: false // אם תרצה שהתבנית תמיד תוכנס כ"מחיר אחיד", שנה את זה ל-true
+  });
+  
+  renderItems();
+}
+// ----------------------------------------
+
 function escapeHtml(str) {
   if (!str) return '';
   return str.replace(/&/g, '&amp;')
@@ -475,137 +520,4 @@ function printQuote() {
       <title>${escapeHtml(title)} - ${escapeHtml(client)}</title>
       <style>
         body { font-family: Arial, Helvetica, sans-serif; color: #000000; margin: 0; padding: 40px; font-size: 16px; line-height: 1.6; }
-        .header { display: flex; justify-content: space-between; border-bottom: 3px solid #000000; padding-bottom: 15px; margin-bottom: 35px; }
-        .header h1 { margin: 0; font-size: 32px; color: #000000; letter-spacing: -0.5px; }
-        .header h2 { margin: 0; font-size: 22px; margin-bottom: 5px; color: #000000; }
-        .header p { margin: 0; color: #333333; font-size: 15px; font-weight: bold; }
-        .client-box { background-color: #f5f5f5; padding: 20px; border: 1px solid #999999; margin-bottom: 35px; border-radius: 6px; font-size: 18px; color: #000000; }
-        
-        table { width: 100%; border-collapse: collapse; margin-bottom: 40px; }
-        th, td { border: 1px solid #666666; padding: 12px 15px; text-align: right; }
-        th { background-color: #eeeeee; font-weight: bold; font-size: 16px; color: #000000; }
-        .center { text-align: center; }
-        .price-cell { font-weight: bold; width: 160px; font-size: 16px; }
-        .desc-cell { font-size: 16px; color: #000000; }
-        
-        .main-row td { padding-top: 20px; padding-bottom: 20px; font-size: 18px; color: #000000; }
-        .sub-row-print td { color: #333333; padding-top: 8px; padding-bottom: 8px; border-top: none; }
-        .sub-num { color: #666666; font-size: 14px; font-weight: bold; margin-left: 8px; }
-        
-        .totals-container { width: 350px; float: left; border: 1px solid #999999; padding: 20px; background: #f5f5f5; border-radius: 6px; }
-        .totals-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 16px; font-weight: bold; color: #333333; }
-        .grand-total { font-size: 24px; font-weight: 800; border-top: 3px solid #000000; margin-top: 15px; padding-top: 15px; color: #000000; }
-        
-        .clear { clear: both; }
-        .notes-box { margin-top: 50px; padding: 20px; border-right: 5px solid #000000; background: #f5f5f5; border-radius: 4px; }
-        .notes-box pre { font-family: Arial, Helvetica, sans-serif; white-space: pre-wrap; margin: 0; margin-top: 10px; font-size: 16px; line-height: 1.6; color: #000000; }
-        
-        .disclaimer { margin-top: 40px; padding-top: 15px; border-top: 1px solid #999999; font-size: 14px; color: #333333; font-weight: bold; }
-        
-        @media print {
-          body { padding: 0; }
-          .totals-container { break-inside: avoid; }
-          * { -webkit-print-color-adjust: exact !important; color-adjust: exact !important; print-color-adjust: exact !important; }
-        }
-      </style>
-    </head>
-    <body>
-      <div class="header">
-        <div>
-          <h1>${bizName}</h1>
-        </div>
-        <div>
-          <h2>${escapeHtml(title)}</h2>
-          <p>תאריך: ${dateStr}</p>
-        </div>
-      </div>
-      
-      <div class="client-box">
-        <strong>לכבוד:</strong> ${escapeHtml(client)}
-      </div>
-      
-      <table>
-        <thead>
-          <tr>
-            <th style="width: 60px;" class="center">#</th>
-            <th>תיאור העבודה</th>
-            <th class="price-cell">סה"כ</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${tableRows}
-        </tbody>
-      </table>
-      
-      <div class="totals-container">
-        <div class="totals-row">
-          <span>סה"כ לפני מע"מ:</span>
-          <span>₪${subtotal.toLocaleString()}</span>
-        </div>
-        ${isVat ? `
-        <div class="totals-row">
-          <span>מע"מ (18%):</span>
-          <span>₪${vat.toLocaleString()}</span>
-        </div>` : ''}
-        <div class="totals-row grand-total">
-          <span>סה"כ לתשלום:</span>
-          <span>₪${total.toLocaleString()}</span>
-        </div>
-      </div>
-      <div class="clear"></div>
-      
-      ${notes ? `
-      <div class="notes-box">
-        <strong style="font-size: 18px;">הערות:</strong>
-        <pre>${escapeHtml(notes)}</pre>
-      </div>` : ''}
-      
-      <div class="disclaimer">
-        * המחיר לא כולל קרמיקה ברזים, שקעים, מפסקים, גופי תאורה, כלים סאניטריים, רדיאטורים ועבודות נגרות
-      </div>
-    </body>
-    </html>
-  `;
-
-  let iframe = document.getElementById('print-iframe');
-  if (!iframe) {
-    iframe = document.createElement('iframe');
-    iframe.id = 'print-iframe';
-    
-    // מוסתר מהמשתמש אך נשמר בגודל מלא כדי שההדפסה תצא מדויקת ולא חתוכה
-    iframe.style.position = 'absolute';
-    iframe.style.top = '-10000px';
-    iframe.style.width = '1200px';
-    iframe.style.height = '1200px';
-    iframe.style.border = 'none';
-    
-    document.body.appendChild(iframe);
-  }
-
-  const doc = iframe.contentWindow.document;
-  doc.open();
-  doc.write(printHtml);
-  doc.close();
-
-  // פעולת ההדפסה קורית מכאן (ולא מתורגמת כטקסט בתוך ה-HTML)
-  setTimeout(() => {
-    iframe.contentWindow.focus();
-    iframe.contentWindow.print();
-  }, 500);
-}
-
-function resetForm() {
-  if(confirm("האם לפתוח הצעה חדשה? כל הנתונים יימחקו.")) {
-    items = [];
-    document.getElementById('client-name').value = '';
-    document.getElementById('quote-title').value = '';
-    document.getElementById('notes').value = '';
-    addRow();
-  }
-}
-
-// אתחול המסך
-addRow();
-</script>
-</body>
-</html>
+        .header { display: flex; justify-content: space-between; border-bottom: 3px solid #000000; padding-bottom: 15px; margin-
