@@ -223,9 +223,9 @@
     <input type="file" id="file-upload" style="display:none" accept=".json">
     
     <button type="button" class="btn btn-outline" id="btn-new">הצעה חדשה</button>
-    <button type="button" class="btn btn-outline" id="btn-upload-trigger">📂 טען הצעה</button>
-    <button type="button" class="btn btn-outline" id="btn-save">💾 שמור הצעה</button>
-    <button type="button" class="btn btn-gold" id="btn-print">🖨 הדפס</button>
+    <button type="button" class="btn btn-outline" id="btn-upload-trigger">📂 טען הצעה </button>
+    <button type="button" class="btn btn-outline" id="btn-save">💾 שמור הצעה </button>
+    <button type="button" class="btn btn-gold" id="btn-print">🖨 הדפס הצעה </button>
   </div>
 </div>
 
@@ -286,8 +286,8 @@
             <tr>
               <th style="width:50px; text-align:center;">#</th>
               <th style="min-width: 300px;">תיאור עבודה</th>
-              <th style="width:140px; text-align:center;">מחיר</th>
-              <th style="width:140px; text-align:left;">סה"כ מחיר ללא מע"מ (₪)</th>
+              <th style="width:140px; text-align:center;">מחיר יחידה</th>
+              <th style="width:150px; text-align:left;">סה"כ ₪ ללא מע"מ  </th>
               <th style="width:60px;"></th>
             </tr>
           </thead>
@@ -493,7 +493,7 @@ function loadProject(event) {
       
       appItems = data.items || [];
       renderItems();
-      calcTotals(); // מוודא שהסיכומים מתעדכנים בטעינה
+      calcTotals(); 
     } catch (err) {
       alert("שגיאה בטעינת הקובץ. ודא שזהו קובץ JSON תקין שנוצר על ידי המערכת.");
     }
@@ -508,7 +508,7 @@ function resetForm() {
     document.getElementById('client-name').value = '';
     document.getElementById('quote-title').value = '';
     document.getElementById('notes').value = '';
-    renderItems(); // מנקה את הטבלה לחלוטין ללא יצירת שורה ריקה
+    renderItems(); 
   }
 }
 
@@ -796,38 +796,31 @@ function handleTableFocusOut(e) {
   }
 }
 
-// אתחול המערכת
 function initApp() {
   const btnNew = document.getElementById('btn-new');
   if (!btnNew || btnNew.dataset.init) return;
   btnNew.dataset.init = "true";
 
-  // כפתורי הניווט הראשיים
   btnNew.addEventListener('click', resetForm);
   document.getElementById('btn-upload-trigger').addEventListener('click', () => document.getElementById('file-upload').click());
   document.getElementById('file-upload').addEventListener('change', loadProject);
   document.getElementById('btn-save').addEventListener('click', saveProject);
+  
   document.getElementById('btn-print').addEventListener('click', printQuote);
+  
   document.getElementById('btn-add-row').addEventListener('click', addRow);
   document.getElementById('vat-check').addEventListener('change', calcTotals);
 
-  // כפתורי התבניות בצד
   document.querySelectorAll('.tmpl-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-      addTemplate(this.getAttribute('data-tmpl'));
-    });
+    btn.addEventListener('click', function() { addTemplate(this.getAttribute('data-tmpl')); });
   });
 
-  // האזנה לאירועים מתוך הטבלה
   const tbody = document.getElementById('items-body');
   tbody.addEventListener('click', handleTableClick);
   tbody.addEventListener('input', handleTableInput);
   tbody.addEventListener('focusout', handleTableFocusOut);
-
-  // המערכת נטענת עכשיו ריקה לחלוטין - ללא קריאה ל-addRow()!
 }
 
-// הרצת האתחול
 initApp();
 document.addEventListener('DOMContentLoaded', initApp);
 </script>
