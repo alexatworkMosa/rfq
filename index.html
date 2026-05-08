@@ -295,7 +295,7 @@
           <tbody id="items-body"></tbody>
         </table>
         <div style="padding: 20px;">
-          <button type="button" class="btn btn-outline" id="btn-add-row" style="width:100%; border-style: dashed; padding: 14px;">+ הוסף סעיף עבודה חדש (ריק)</button>
+          <button type="button" class="btn btn-outline" id="btn-add-row" style="width:100%; border-style: dashed; padding: 14px;">+ הוסף סעיף עבודה  </button>
         </div>
       </div>
     </div>
@@ -391,7 +391,7 @@ function renderItems() {
     const tr = document.createElement('tr');
     tr.className = 'parent-row';
     tr.innerHTML = `
-      <td style="text-align:center; font-weight:800; color:var(--blue); font-size:18px; padding-top:18px;">${i+1}</td>
+      <td style="text-align:center; font-weight:800; color:var(--blue); font-size:22px; padding-top:18px;">${i+1}</td>
       <td>
         <textarea class="desc-input" data-i="${i}" placeholder="">${escapeHtml(item.desc)}</textarea>
         <div style="margin: 8px 0 12px 0;">
