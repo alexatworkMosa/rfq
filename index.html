@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>מחולל הצעות מחיר — שטיין יפים שיפוצים</title>
+<title> שטיין יפים שיפוצים  </title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap');
 
@@ -287,8 +287,9 @@
             <tr>
               <th style="width:40px; text-align:center;">#</th>
               <th style="min-width: 300px;">תיאור עבודה</th>
-              <th style="width:140px; text-align:center;">מחיר יחידה</th>
-              <th style="width:160px; text-align:center;">סה"כ מחיר ללא מע"מ</th>
+              <th style="width:140px; text-align:center;">מחיר </th>
+              <th style="width:160px; text-align:center;">סה"כ
+              </th>
               <th style="width:60px;"></th>
             </tr>
           </thead>
@@ -391,7 +392,7 @@ function renderItems() {
     const tr = document.createElement('tr');
     tr.className = 'parent-row';
     tr.innerHTML = `
-      <td style="text-align:center; font-weight:800; color:var(--blue); font-size:22px; padding-top:18px;">${i+1}</td>
+      <td style="text-align:center; font-weight:800; color:var(--blue); font-size:25px; padding-top:18px;">${i+1}</td>
       <td>
         <textarea class="desc-input" data-i="${i}" placeholder="">${escapeHtml(item.desc)}</textarea>
         <div style="margin: 8px 0 12px 0;">
@@ -664,7 +665,7 @@ function printQuote() {
           <tr>
             <th style="width: 40px;" class="center">#</th>
             <th>תיאור העבודה</th>
-            <th class="price-cell center">סה"כ מחיר ללא מע"מ</th>
+            <th class="price-cell center">סה"כ </th>
           </tr>
         </thead>
         <tbody>
